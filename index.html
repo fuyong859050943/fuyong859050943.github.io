@@ -144,6 +144,79 @@
       <div class="body-wrap">
         
   
+    <article id="post-Spring注入工具类" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/01/13/Spring注入工具类/">&#39;Spring注入工具类&#39;</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <pre><code>  系统为SpringMVC框架，在开发的过程中有一些工具类需要调用下由spring管理的service层。但是一进注入不进来，报null异常；
+
+  在尝试了网上的一系列方法后，还是没有解决。网上的解决方法主要有以下几种：
+
+    1、将工具类申明为spring组件，如@controller @compent 等，在spring自动扫描包设置中将工具类所在的包加进来；  无效  
+
+    2、new一个service；  无效 而且不符合spring管理；
+
+  山穷水尽后，找到了一个另类的解决办法，代码原理还不太清楚，只是大概猜测下，有错误的地方，大家留言指正：
+
+
+
+@Component     //申明为spring组件
+public class TestUtils {  
+    @Autowired    
+    private TestService testService;  //添加所需service的私有成员
+    private static TestUtils  testUtils ;  //  关键点1   静态初使化 一个工具类  这样是为了在spring初使化之前
+
+    public void setTestService(TestService  testService) {  
+        this.testService = testService;  
+    }  
+
+    @PostConstruct     //关键二   通过@PostConstruct 和 @PreDestroy 方法 实现初始化和销毁bean之前进行的操作
+    public void init() {  
+        testUtils = this;  
+        testUtils.testService = this.testService;   // 初使化时将已静态化的testService实例化
+    }  
+
+这样下面的代码中就可以通过 testUtils.testService 来调用service处理
+</code></pre>
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      <a href="/2017/01/13/Spring注入工具类/" class="archive-article-date">
+  	<time datetime="2017-01-13T13:21:37.000Z" itemprop="datePublished"><i class="icon-clock"></i>2017-01-13</time>
+</a>
+      
+      
+
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+
+
+
+
+
+
+
+
+
+  
     <article id="post-HEXO搭建个人博客" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-inner">
     
